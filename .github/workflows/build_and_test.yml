@@ -41,14 +41,13 @@ jobs:
         run: fractal-manifest check --package nd2-omezarr-converter
 
       - name: Test core library with pytest
-        run: python -m pytest tests
+        run: python -m pytest --cov=nd2_omezarr_converter --cov-branch --cov-report=xml tests
 
       - name: Coverage
         if: ${{ matrix.python-version == '3.12' }} && ${{ matrix.os == 'ubuntu-22.04' }}
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
   
   deploy:
     name: Deploy
