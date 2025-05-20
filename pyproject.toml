@@ -41,6 +41,7 @@ dev = [
     "devtools",
     "hatch",
     "pytest",
+    "pytest-cov",
     "requests",
     "jsonschema",
     "ruff",
