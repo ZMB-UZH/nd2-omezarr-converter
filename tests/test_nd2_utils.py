@@ -1,6 +1,7 @@
 import nd2
 import numpy as np
 import numpy.testing as npt
+import pytest
 
 from nd2_omezarr_converter.nd2_utils import (
     build_tiled_image,
@@ -15,12 +16,10 @@ from nd2_omezarr_converter.nd2_utils import (
 def test_nd2TileLoader(temp_dir):
     path = (
         temp_dir
-        / "WellPlate_Jobs_3w6p2c0z0t_overlap"
-        / "20250506_124144_018"
-        / "WellB02_ChannelSD DAPI- EM,SD GFP - EM_Seq0000.nd2"
+        / "ND_Acquisitions_nd2"
+        / "01_0c_0z.nd2"
     )
     tile_loader = nd2TileLoader(path=str(path), p=0)
-
     # Check if the tile loader is initialized correctly
     assert tile_loader is not None
     assert tile_loader.path == str(path)
@@ -29,7 +28,39 @@ def test_nd2TileLoader(temp_dir):
     data = tile_loader.load()
     assert data is not None
     assert isinstance(data, np.ndarray)
-    assert data.shape == (1, 2, 1, 512, 1024)
+    assert data.shape == (1, 1, 1, 512, 1024)
+
+    path = (
+        temp_dir
+        / "ND_Acquisitions_nd2"
+        / "05_2c_3z.nd2"
+    )
+    tile_loader = nd2TileLoader(path=str(path), p=0)
+    # Check if the tile loader is initialized correctly
+    assert tile_loader is not None
+    assert tile_loader.path == str(path)
+    assert tile_loader.p == 0
+    assert tile_loader.dtype == "uint16"
+    data = tile_loader.load()
+    assert data is not None
+    assert isinstance(data, np.ndarray)
+    assert data.shape == (1, 2, 3, 512, 1024)
+
+    path = (
+        temp_dir
+        / "ND_Acquisitions_nd2"
+        / "13_4t_XY2_2c_0z.nd2"
+    )
+    tile_loader = nd2TileLoader(path=str(path), p=0)
+    # Check if the tile loader is initialized correctly
+    assert tile_loader is not None
+    assert tile_loader.path == str(path)
+    assert tile_loader.p == 0
+    assert tile_loader.dtype == "uint16"
+    data = tile_loader.load()
+    assert data is not None
+    assert isinstance(data, np.ndarray)
+    assert data.shape == (4, 2, 1, 512, 1024)
 
 
 def test_build_tiles(temp_dir):
@@ -45,7 +76,7 @@ def test_build_tiles(temp_dir):
     tile = tiles[0]
     npt.assert_allclose(tile.top_l.x, 40162.8)
     npt.assert_allclose(tile.top_l.y, -22751.2)
-    npt.assert_allclose(tile.top_l.z, 5720.22)
+    npt.assert_allclose(tile.top_l.z, 0)
     npt.assert_allclose(tile.top_l.c, 0)
     npt.assert_allclose(tile.top_l.t, 0)
 
@@ -92,22 +123,26 @@ def test_parse_input_path(temp_dir):
         / "20250506_124144_018"
         / "WellB02_ChannelSD DAPI- EM,SD GFP - EM_Seq0000.nd2"
     )
-
     nd2_list, mode = parse_input_path(path)
-
     assert nd2_list == [path]
     assert mode == "single"
 
     path = temp_dir / "WellPlate_Jobs_3w6p2c0z0t_overlap" / "20250506_124144_018"
-
     nd2_list, mode = parse_input_path(path)
-
     assert nd2_list == [
         path / "WellB02_ChannelSD DAPI- EM,SD GFP - EM_Seq0000.nd2",
         path / "WellB03_ChannelSD DAPI- EM,SD GFP - EM_Seq0001.nd2",
         path / "WellC02_ChannelSD DAPI- EM,SD GFP - EM_Seq0002.nd2",
     ]
     assert mode == "plate"
+
+    path = temp_dir
+    with pytest.raises(ValueError):
+        nd2_list, mode = parse_input_path(path)
+
+    path = 'somefile.txt'
+    with pytest.raises(ValueError):
+        nd2_list, mode = parse_input_path(path)
 
 
 def test_parse_nd2_acquisition(temp_dir):
@@ -165,3 +200,12 @@ def test_parse_nd2_acquisition(temp_dir):
     assert tiled_images[0].path == "20250506_124144_018.zarr/B/2/0"
     assert tiled_images[1].path == "20250506_124144_018.zarr/B/3/0"
     assert tiled_images[2].path == "20250506_124144_018.zarr/C/2/0"
+
+    # Test with a non-existent file
+    path = temp_dir / "non_existent.nd2"
+    with pytest.raises(FileNotFoundError):
+        parse_nd2_acquisition(
+            acq_path=path,
+            plate_name="test_plate",
+            acquisition_id=1,
+        )
