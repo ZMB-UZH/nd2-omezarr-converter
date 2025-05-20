@@ -1,3 +1,6 @@
+[![CI (build and test)](https://github.com/ZMB-UZH/nd2-omezarr-converter/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/ZMB-UZH/nd2-omezarr-converter/actions/workflows/build_and_test.yml)
+[![codecov](https://codecov.io/gh/ZMB-UZH/nd2-omezarr-converter/graph/badge.svg?token=8Z1SQAZJIO)](https://codecov.io/gh/ZMB-UZH/nd2-omezarr-converter)
+
 # nd2-omezarr-converter
 
 nd2 to OME-Zarr converter
