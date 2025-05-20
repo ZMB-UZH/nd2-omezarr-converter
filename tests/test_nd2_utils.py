@@ -140,7 +140,7 @@ def test_parse_input_path(temp_dir):
     with pytest.raises(ValueError):
         nd2_list, mode = parse_input_path(path)
 
-    path = 'somefile.txt'
+    path = temp_dir / "ND_Acquisitions_nd2" / "_file_descriptions.txt"
     with pytest.raises(ValueError):
         nd2_list, mode = parse_input_path(path)
 
