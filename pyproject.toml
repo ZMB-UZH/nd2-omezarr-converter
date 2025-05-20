@@ -27,10 +27,10 @@ authors = [
 # Required Python version and dependencies
 requires-python = ">=3.11"
 dependencies = [
-    "fractal-converters-tools",
-    "fractal-task-tools",
+    "fractal-converters-tools >= 0.5.0,<0.6.0",
+    "fractal-task-tools==0.0.12",
+    "ngio >= 0.2.8",
     "nd2",
-    "ngio>=0.2.1",
     "scikit-image",
 ]
 

@@ -76,12 +76,6 @@ def temp_dir(tmp_path_factory):
         CACHE_DIR,
         base_temp,
         "10.5281/zenodo.15411419",
-        "WellPlate_Jobs_3w2p2c0z6t.zip",
-    )
-    download_and_cache(
-        CACHE_DIR,
-        base_temp,
-        "10.5281/zenodo.15411419",
         "ND_Acquisitions_nd2.zip",
     )
 

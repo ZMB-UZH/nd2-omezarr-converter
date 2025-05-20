@@ -39,7 +39,9 @@ class nd2TileLoader:
         tile_data = nd2.imread(self.path, xarray=True, dask=True)
         if "P" in tile_data.dims:
             tile_data = tile_data.isel(P=self.p)
-        if not set(tile_data.dims).issubset(("T", "C", "Z", "Y", "X")):
+        if not set(tile_data.dims).issubset(
+            ("T", "C", "Z", "Y", "X")
+        ): # pragma: no cover
             raise ValueError(
                 f"Data can only have dimensions T, C, Z, Y, X. Found: {tile_data.dims}"
             )
@@ -77,7 +79,7 @@ def build_tiles(nd2file) -> Generator[Tile, Any, None]:
 
     if "P" in nd2file.sizes:
         loops = {experiment.type: experiment for experiment in nd2file.experiment}
-        if "XYPosLoop" not in loops.keys():
+        if "XYPosLoop" not in loops.keys(): # pragma: no cover
             raise ValueError(
                 f"The nd2 file {nd2file.path} contains multiple positions, "
                 "but no XYPosLoop was found in metadata."
@@ -86,7 +88,8 @@ def build_tiles(nd2file) -> Generator[Tile, Any, None]:
             top_l = Point(
                 x=pnt.stagePositionUm.x,
                 y=pnt.stagePositionUm.y,
-                z=pnt.stagePositionUm.z,
+                #z=pnt.stagePositionUm.z,
+                z=0,  # TODO: z != 0 needs to be fixed in fractal-converters-tools
                 c=0,
                 t=0,
             )
@@ -106,7 +109,8 @@ def build_tiles(nd2file) -> Generator[Tile, Any, None]:
         top_l = Point(
             x=pnt.stagePositionUm.x,
             y=pnt.stagePositionUm.y,
-            z=pnt.stagePositionUm.z,
+            #z=pnt.stagePositionUm.z,
+            z=0,  # TODO: z != 0 needs to be fixed in fractal-converters-tools
             c=0,
             t=0,
         )
@@ -264,7 +268,7 @@ def parse_nd2_acquisition(
             build_tiled_image(
                 nd2_path=nd2_file,
                 zarr_name=zarr_name,
-                acquisition_id=acquisition_id,
+                acquisition_id=acquisition_id if mode == "plate" else None,
                 plate=True if mode == "plate" else False,
             )
         )

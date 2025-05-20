@@ -8,6 +8,7 @@ from fractal_converters_tools.task_common_models import (
     AdvancedComputeOptions,
 )
 from fractal_converters_tools.task_init_tools import build_parallelization_list
+from fractal_converters_tools.tiled_image import PlatePathBuilder, SimplePathBuilder
 from pydantic import BaseModel, Field, validate_call
 
 from nd2_omezarr_converter.nd2_utils import parse_nd2_acquisition
@@ -83,12 +84,20 @@ def convert_nd2_init_task(
     )
     logger.info(f"Total {len(parallelization_list)} images to convert.")
 
-    initiate_ome_zarr_plates(
-        zarr_dir=zarr_dir_path,
-        tiled_images=tiled_images,
-        overwrite=overwrite,
-    )
-    logger.info(f"Initialized OME-Zarr Plate at: {zarr_dir_path}")
+    types = {type(tiled_image.path_builder) for tiled_image in tiled_images}
+    if types == {PlatePathBuilder}:
+        initiate_ome_zarr_plates(
+            zarr_dir=zarr_dir_path,
+            tiled_images=tiled_images,
+            overwrite=overwrite,
+        )
+        logger.info(f"Initialized OME-Zarr Plate at: {zarr_dir_path}")
+    elif types == {SimplePathBuilder, PlatePathBuilder}:
+        raise ValueError(
+            "Detected some plate acquisitions and some non-plate acquisitions. "
+            "This is currently not supported. Please run the task separately for "
+            "plate and non-plate acquisitions."
+        )
     return {"parallelization_list": parallelization_list}
 
 

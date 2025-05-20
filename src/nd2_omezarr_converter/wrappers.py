@@ -3,9 +3,22 @@
 from pathlib import Path
 from typing import Literal
 
+from fractal_converters_tools.task_common_models import (
+    AdvancedComputeOptions,
+)
+
+from nd2_omezarr_converter.convert_nd2_compute_task import (
+    convert_nd2_compute_task,
+)
+from nd2_omezarr_converter.convert_nd2_init_task import (
+    Nd2InputModel,
+    convert_nd2_init_task,
+)
+
+
 def convert_nd2_to_omezarr(
     zarr_dir: Path | str,
-    nd2_path: Path | str,
+    acquisitions: list[Nd2InputModel] | str | Path,
     overwrite: bool = False,
     num_levels: int = 5,
     tiling_mode: Literal["auto", "grid", "free", "none"] = "auto",
@@ -43,4 +56,29 @@ def convert_nd2_to_omezarr(
         c_chunk (int): C chunk size.
         t_chunk (int): T chunk size.
     """
-    raise NotImplementedError("This function is not implemented yet.")
+    if isinstance(acquisitions, str | Path):
+        acquisitions = [Nd2InputModel(path=str(acquisitions))]
+    parallelization_list = convert_nd2_init_task(
+        zarr_dir=str(zarr_dir),
+        acquisitions=acquisitions,
+        overwrite=overwrite,
+        advanced_options=AdvancedComputeOptions(
+            num_levels=num_levels,
+            tiling_mode=tiling_mode,
+            swap_xy=swap_xy,
+            invert_x=invert_x,
+            invert_y=invert_y,
+            max_xy_chunk=max_xy_chunk,
+            z_chunk=z_chunk,
+            c_chunk=c_chunk,
+            t_chunk=t_chunk,
+        ),
+    )
+
+    list_of_images = []
+    for task_args in parallelization_list["parallelization_list"]:
+        print(f"Converting {task_args['zarr_url']}")
+        list_updates = convert_nd2_compute_task(
+            zarr_url=task_args["zarr_url"], init_args=task_args["init_args"]
+        )
+        list_of_images.extend(list_updates["image_list_updates"])
