@@ -43,7 +43,7 @@ jobs:
       - name: Check if manifest has changed
         run: |
           if [ -n "$(git diff --exit-code ./src/nd2_omezarr_converter/__FRACTAL_MANIFEST__.json)" ]; then
-          echo "__FRACTAL_MANIFEST__.json has changed. Please run 'python src/nd2_omezarr_converter/dev/create_manifest.py' and commit the changes."
+          echo "__FRACTAL_MANIFEST__.json has changed. Please run 'fractal-manifest create --package nd2_omezarr_converter' and commit the changes."
             exit 1
           else
             echo "__FRACTAL_MANIFEST__.json has not changed."
