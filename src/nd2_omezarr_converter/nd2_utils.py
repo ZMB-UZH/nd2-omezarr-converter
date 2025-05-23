@@ -77,6 +77,10 @@ def build_tiles(nd2file) -> Generator[Tile, Any, None]:
     length_z = shape_z * scale_z
     length_t = shape_t * scale_t
 
+    # camera transformation matrix
+    transformMatrix = nd2file.metadata.channels[0].volume.cameraTransformationMatrix
+    transformMatrix = np.array(transformMatrix).reshape(2, 2)
+
     if "P" in nd2file.sizes:
         loops = {experiment.type: experiment for experiment in nd2file.experiment}
         if "XYPosLoop" not in loops.keys(): # pragma: no cover
@@ -85,9 +89,12 @@ def build_tiles(nd2file) -> Generator[Tile, Any, None]:
                 "but no XYPosLoop was found in metadata."
             )
         for p, pnt in enumerate(loops["XYPosLoop"].parameters.points):
+            # rotate the xy coordinates with the camera transformation matrix
+            xy_coords = np.array([pnt.stagePositionUm.x, pnt.stagePositionUm.y])
+            xy_coords = np.dot(transformMatrix, xy_coords)
             top_l = Point(
-                x=pnt.stagePositionUm.x,
-                y=pnt.stagePositionUm.y,
+                x=xy_coords[0],
+                y=xy_coords[1],
                 #z=pnt.stagePositionUm.z,
                 z=0,  # TODO: z != 0 needs to be fixed in fractal-converters-tools
                 c=0,
