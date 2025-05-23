@@ -74,8 +74,8 @@ def test_build_tiles(temp_dir):
     tiles = list(build_tiles(nd2file))
     assert len(tiles) == 6
     tile = tiles[0]
-    npt.assert_allclose(tile.top_l.x, 40162.8)
-    npt.assert_allclose(tile.top_l.y, -22751.2)
+    npt.assert_allclose(tile.top_l.x, -39220.192028)
+    npt.assert_allclose(tile.top_l.y, 24340.175483)
     npt.assert_allclose(tile.top_l.z, 0)
     npt.assert_allclose(tile.top_l.c, 0)
     npt.assert_allclose(tile.top_l.t, 0)

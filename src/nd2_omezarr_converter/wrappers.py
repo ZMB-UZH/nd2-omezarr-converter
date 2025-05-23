@@ -3,14 +3,11 @@
 from pathlib import Path
 from typing import Literal
 
-from fractal_converters_tools.task_common_models import (
-    AdvancedComputeOptions,
-)
-
 from nd2_omezarr_converter.convert_nd2_compute_task import (
     convert_nd2_compute_task,
 )
 from nd2_omezarr_converter.convert_nd2_init_task import (
+    AdvancedOptions,
     Nd2InputModel,
     convert_nd2_init_task,
 )
@@ -24,7 +21,7 @@ def convert_nd2_to_omezarr(
     tiling_mode: Literal["auto", "grid", "free", "none"] = "auto",
     swap_xy: bool = False,
     invert_x: bool = False,
-    invert_y: bool = False,
+    invert_y: bool = True,
     max_xy_chunk: int = 4096,
     z_chunk: int = 10,
     c_chunk: int = 1,
@@ -62,7 +59,7 @@ def convert_nd2_to_omezarr(
         zarr_dir=str(zarr_dir),
         acquisitions=acquisitions,
         overwrite=overwrite,
-        advanced_options=AdvancedComputeOptions(
+        advanced_options=AdvancedOptions(
             num_levels=num_levels,
             tiling_mode=tiling_mode,
             swap_xy=swap_xy,

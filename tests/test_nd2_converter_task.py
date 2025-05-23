@@ -30,6 +30,7 @@ def test_basic_worflow(temp_dir):
         acquisitions=[
             Nd2InputModel(path=str(path), plate_name="test_plate", acquisition_id=1)
         ],
+        tiling_mode="none",
     )
     # TODO: Output can't be read by napari-ome-zarr because well shapes are not
     # consistent across wells. Check why.

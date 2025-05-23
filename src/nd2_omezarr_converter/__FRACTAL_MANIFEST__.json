@@ -23,7 +23,7 @@
       },
       "args_schema_non_parallel": {
         "$defs": {
-          "AdvancedComputeOptions": {
+          "AdvancedOptions": {
             "description": "Advanced options for the conversion.",
             "properties": {
               "num_levels": {
@@ -54,7 +54,7 @@
                 "type": "boolean"
               },
               "invert_y": {
-                "default": false,
+                "default": true,
                 "title": "Invert Y",
                 "type": "boolean"
               },
@@ -83,7 +83,7 @@
                 "type": "integer"
               }
             },
-            "title": "AdvancedComputeOptions",
+            "title": "AdvancedOptions",
             "type": "object"
           },
           "Nd2InputModel": {
@@ -133,13 +133,13 @@
             "description": "Overwrite existing Zarr files."
           },
           "advanced_options": {
-            "$ref": "#/$defs/AdvancedComputeOptions",
+            "$ref": "#/$defs/AdvancedOptions",
             "default": {
               "num_levels": 5,
               "tiling_mode": "auto",
               "swap_xy": false,
               "invert_x": false,
-              "invert_y": false,
+              "invert_y": true,
               "max_xy_chunk": 4096,
               "z_chunk": 10,
               "c_chunk": 1,
