@@ -4,7 +4,7 @@ from fractal_task_tools.task_models import (
     ConverterCompoundTask,
 )
 
-AUTHORS = "Fractal Core Team"
+AUTHORS = "Flurin Sturzenegger"
 DOCS_LINK = None
 INPUT_MODELS = []
 
