@@ -70,15 +70,15 @@ def test_build_tiles(temp_dir):
         / "20250506_124144_018"
         / "WellB02_ChannelSD DAPI- EM,SD GFP - EM_Seq0000.nd2"
     )
-    nd2file = nd2.ND2File(path)
-    tiles = list(build_tiles(nd2file))
-    assert len(tiles) == 6
-    tile = tiles[0]
-    npt.assert_allclose(tile.top_l.x, 40162.8)
-    npt.assert_allclose(tile.top_l.y, -22751.2)
-    npt.assert_allclose(tile.top_l.z, 0)
-    npt.assert_allclose(tile.top_l.c, 0)
-    npt.assert_allclose(tile.top_l.t, 0)
+    with nd2.ND2File(path) as nd2file:    
+        tiles = list(build_tiles(nd2file))
+        assert len(tiles) == 6
+        tile = tiles[0]
+        npt.assert_allclose(tile.top_l.x, -39220.192028)
+        npt.assert_allclose(tile.top_l.y, 24340.175483)
+        npt.assert_allclose(tile.top_l.z, 0)
+        npt.assert_allclose(tile.top_l.c, 0)
+        npt.assert_allclose(tile.top_l.t, 0)
 
 
 def test_parse_well_info():

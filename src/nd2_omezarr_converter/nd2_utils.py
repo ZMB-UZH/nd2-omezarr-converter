@@ -8,11 +8,14 @@ from typing import Any
 
 import nd2
 import numpy as np
-from fractal_converters_tools.tile import Point, Tile, Vector
-from fractal_converters_tools.tiled_image import (
+from fractal_converters_tools import (
     PlatePathBuilder,
+    Point,
     SimplePathBuilder,
+    Tile,
     TiledImage,
+    Vector,
+    OriginDict,
 )
 from ngio import PixelSize
 
@@ -41,7 +44,7 @@ class nd2TileLoader:
             tile_data = tile_data.isel(P=self.p)
         if not set(tile_data.dims).issubset(
             ("T", "C", "Z", "Y", "X")
-        ): # pragma: no cover
+        ):  # pragma: no cover
             raise ValueError(
                 f"Data can only have dimensions T, C, Z, Y, X. Found: {tile_data.dims}"
             )
@@ -77,18 +80,25 @@ def build_tiles(nd2file) -> Generator[Tile, Any, None]:
     length_z = shape_z * scale_z
     length_t = shape_t * scale_t
 
+    # camera transformation matrix
+    transformMatrix = nd2file.metadata.channels[0].volume.cameraTransformationMatrix
+    transformMatrix = np.array(transformMatrix).reshape(2, 2)
+
     if "P" in nd2file.sizes:
         loops = {experiment.type: experiment for experiment in nd2file.experiment}
-        if "XYPosLoop" not in loops.keys(): # pragma: no cover
+        if "XYPosLoop" not in loops.keys():  # pragma: no cover
             raise ValueError(
                 f"The nd2 file {nd2file.path} contains multiple positions, "
                 "but no XYPosLoop was found in metadata."
             )
         for p, pnt in enumerate(loops["XYPosLoop"].parameters.points):
+            # rotate the xy coordinates with the camera transformation matrix
+            xy_coords = np.array([pnt.stagePositionUm.x, pnt.stagePositionUm.y])
+            xy_coords = np.dot(transformMatrix, xy_coords)
             top_l = Point(
-                x=pnt.stagePositionUm.x,
-                y=pnt.stagePositionUm.y,
-                #z=pnt.stagePositionUm.z,
+                x=xy_coords[0],
+                y=xy_coords[1],
+                # z=pnt.stagePositionUm.z,
                 z=0,  # TODO: z != 0 needs to be fixed in fractal-converters-tools
                 c=0,
                 t=0,
@@ -96,10 +106,19 @@ def build_tiles(nd2file) -> Generator[Tile, Any, None]:
             diag = Vector(x=length_x, y=length_y, z=length_z, c=shape_c, t=length_t)
             tile_loader = nd2TileLoader(path=nd2file.path, p=p)
             pixel_size = PixelSize(x=scale_x, y=scale_y, z=scale_z)
+            origin = OriginDict(
+                x_micrometer_original=xy_coords[0],
+                y_micrometer_original=xy_coords[1],
+                # z_micrometer_original=pnt.stagePositionUm.z,
+                # TODO: z != 0 needs to be fixed in fractal-converters-tools
+                z_micrometer_original=0,
+                t_original=0,
+            )
             tile = Tile(
                 top_l=top_l,
                 diag=diag,
                 pixel_size=pixel_size,
+                origin=origin,
                 data_loader=tile_loader,
             )
             yield tile
@@ -109,7 +128,7 @@ def build_tiles(nd2file) -> Generator[Tile, Any, None]:
         top_l = Point(
             x=pnt.stagePositionUm.x,
             y=pnt.stagePositionUm.y,
-            #z=pnt.stagePositionUm.z,
+            # z=pnt.stagePositionUm.z,
             z=0,  # TODO: z != 0 needs to be fixed in fractal-converters-tools
             c=0,
             t=0,

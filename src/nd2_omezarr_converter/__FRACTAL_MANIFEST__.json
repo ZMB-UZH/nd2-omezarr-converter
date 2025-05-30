@@ -9,7 +9,7 @@
         "ND2",
         "Converter"
       ],
-      "docs_info": "### Purpose\n- Convert a Nikon .nd2 file, or a folder of .nd2 files to an OME-Zarr file or plate.\n\n### Outputs\n- An OME-Zarr image or plate.\n\n### Limitations\n- This task has been tested on a limited set of acquisitions (see https://zenodo.org/records/15411420). It may not work on all Nikon .nd2 acquisitions.\n\n### Expected inputs\nThe following input layouts are supported. (The names in curly braces `{}` can be freely chosen by the user.)\n\n- Single file acquisition\n\t- acquisition path input:\n\t\t```text\n\t\t.../{filename}.nd2\n\t\t```\n\t- output: single OME-Zarr image\n\n- Folder of single file acquisitions\n\t- acquisition path input:\n\t\t```text\n\t\t.../{folder}\n\t\t----/{filename1}.nd2\n\t\t----/{filename2}.nd2\n\t\t...\n\t\t```\n\t- output: multiple OME-Zarr images\n\n- Folder of nd2 files belonging to a plate acquisitions\n\t- acquisition path input:\n\t\t```text\n\t\t.../{folder}\n\t\t----/WellA01{filename1}.nd2\n\t\t----/WellC02{filename2}.nd2\n\t\t...\n\t\t```\n\t- output: OME-Zarr plate\n\t- Note:\n\t\t- This works for files generated with the standard plate acquisition JOBS script at the ZMB Nikon Spinning Disk\n\t\t- The filenames MUST start with `Well` and the well name. Valid options for well names are e.g. `A1`, `A01`\n\t\t- If there are other .nd2 files in the folder that do not adhere to this, individual OME-Zarr images will be created instead of a plate\n\t\t- Splitting the positions into multiple files is NOT supported at the moment. (e.g. filenames like `WellB02_PointB02_0000_{filename}.nd2`)\n",
+      "docs_info": "### Purpose\n- Convert a Nikon .nd2 file, or a folder of .nd2 files to an OME-Zarr file or plate.\n\n### Outputs\n- An OME-Zarr image or plate.\n\n### Limitations\n- This task has been tested on a limited set of acquisitions (see https://zenodo.org/records/15411420). It may not work on all Nikon .nd2 acquisitions.\n- If the positions are split into different files with e.g. the 'Split Multipoints' option, they will be converted to individual images.\n- See below for more detailed input expectations.\n\n### Expected inputs\nThe following input layouts are supported. (The names in curly braces `{}` can be freely chosen by the user.)\n\n- Single file acquisition\n\t- acquisition path input:\n\t\t```text\n\t\t.../{filename}.nd2\n\t\t```\n\t- output: single OME-Zarr image\n\n- Folder of single file acquisitions\n\t- acquisition path input:\n\t\t```text\n\t\t.../{folder}\n\t\t----/{filename1}.nd2\n\t\t----/{filename2}.nd2\n\t\t...\n\t\t```\n\t- output: multiple OME-Zarr images\n\n- Folder of nd2 files belonging to a plate acquisitions\n\t- acquisition path input:\n\t\t```text\n\t\t.../{folder}\n\t\t----/WellA01{filename1}.nd2\n\t\t----/WellC02{filename2}.nd2\n\t\t...\n\t\t```\n\t- output: OME-Zarr plate\n\t- Note:\n\t\t- This works for files generated with the standard plate acquisition JOBS script at the ZMB Nikon Spinning Disk\n\t\t- The filenames MUST start with `Well` and the well name. Valid options for well names are e.g. `A1`, `A01`\n\t\t- If there are other .nd2 files in the folder that do not adhere to this, individual OME-Zarr images will be created instead of a plate\n\t\t- Splitting the positions into multiple files is NOT supported at the moment. (e.g. filenames like `WellB02_PointB02_0000_{filename}.nd2`)\n",
       "type": "converter_compound",
       "executable_non_parallel": "convert_nd2_init_task.py",
       "executable_parallel": "convert_nd2_compute_task.py",
@@ -23,7 +23,7 @@
       },
       "args_schema_non_parallel": {
         "$defs": {
-          "AdvancedComputeOptions": {
+          "AdvancedOptions": {
             "description": "Advanced options for the conversion.",
             "properties": {
               "num_levels": {
@@ -54,7 +54,7 @@
                 "type": "boolean"
               },
               "invert_y": {
-                "default": false,
+                "default": true,
                 "title": "Invert Y",
                 "type": "boolean"
               },
@@ -83,7 +83,7 @@
                 "type": "integer"
               }
             },
-            "title": "AdvancedComputeOptions",
+            "title": "AdvancedOptions",
             "type": "object"
           },
           "Nd2InputModel": {
@@ -133,13 +133,13 @@
             "description": "Overwrite existing Zarr files."
           },
           "advanced_options": {
-            "$ref": "#/$defs/AdvancedComputeOptions",
+            "$ref": "#/$defs/AdvancedOptions",
             "default": {
               "num_levels": 5,
               "tiling_mode": "auto",
               "swap_xy": false,
               "invert_x": false,
-              "invert_y": false,
+              "invert_y": true,
               "max_xy_chunk": 4096,
               "z_chunk": 10,
               "c_chunk": 1,
@@ -270,5 +270,5 @@
   ],
   "has_args_schemas": true,
   "args_schema_version": "pydantic_v2",
-  "authors": "Fractal Core Team"
+  "authors": "Flurin Sturzenegger"
 }

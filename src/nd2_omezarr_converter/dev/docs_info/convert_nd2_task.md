@@ -6,6 +6,8 @@
 
 ### Limitations
 - This task has been tested on a limited set of acquisitions (see https://zenodo.org/records/15411420). It may not work on all Nikon .nd2 acquisitions.
+- If the positions are split into different files with e.g. the 'Split Multipoints' option, they will be converted to individual images.
+- See below for more detailed input expectations.
 
 ### Expected inputs
 The following input layouts are supported. (The names in curly braces `{}` can be freely chosen by the user.)
