@@ -34,35 +34,6 @@ class Nd2InputModel(BaseModel):
     acquisition_id: int = Field(default=0, ge=0)
 
 
-class AdvancedOptions(AdvancedComputeOptions):
-    """Advanced options for the conversion.
-
-    Attributes:
-        num_levels (int): The number of resolution levels in the pyramid.
-        tiling_mode (Literal["auto", "grid", "free", "none"]): Specify the tiling mode.
-            "auto" will automatically determine the tiling mode.
-            "grid" if the input data is a grid, it will be tiled using snap-to-grid.
-            "free" will remove any overlap between tiles using a snap-to-corner
-            approach.
-            "none" will write the positions as is, using the microscope metadata.
-        swap_xy (bool): Swap x and y axes coordinates in the metadata. This is sometimes
-            necessary to ensure correct image tiling and registration.
-        invert_x (bool): Invert x axis coordinates in the metadata. This is
-            sometimes necessary to ensure correct image tiling and registration.
-        invert_y (bool): Invert y axis coordinates in the metadata. This is
-            sometimes necessary to ensure correct image tiling and registration.
-        max_xy_chunk (int): XY chunk size is set as the minimum of this value and the
-            microscope tile size.
-        z_chunk (int): Z chunk size.
-        c_chunk (int): C chunk size.
-        t_chunk (int): T chunk size.
-    """
-
-    # set invert_y to True by default
-    # (for use with ZMB Nikon SD microscope, test for others)
-    invert_y: bool = True
-
-
 @validate_call
 def convert_nd2_init_task(
     *,
@@ -71,7 +42,7 @@ def convert_nd2_init_task(
     # Task parameters
     acquisitions: list[Nd2InputModel],
     overwrite: bool = False,
-    advanced_options: AdvancedOptions = AdvancedOptions(),  # noqa: B008
+    advanced_options: AdvancedComputeOptions = AdvancedComputeOptions(),  # noqa: B008
 ):
     """Initialize the nd2 to OME-Zarr conversion task.
 

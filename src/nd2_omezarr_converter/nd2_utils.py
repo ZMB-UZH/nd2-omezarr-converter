@@ -9,13 +9,13 @@ from typing import Any
 import nd2
 import numpy as np
 from fractal_converters_tools import (
+    OriginDict,
     PlatePathBuilder,
     Point,
     SimplePathBuilder,
     Tile,
     TiledImage,
     Vector,
-    OriginDict,
 )
 from ngio import PixelSize
 
@@ -97,7 +97,7 @@ def build_tiles(nd2file) -> Generator[Tile, Any, None]:
             xy_coords = np.dot(transformMatrix, xy_coords)
             top_l = Point(
                 x=xy_coords[0],
-                y=xy_coords[1],
+                y=-xy_coords[1],
                 # z=pnt.stagePositionUm.z,
                 z=0,  # TODO: z != 0 needs to be fixed in fractal-converters-tools
                 c=0,
