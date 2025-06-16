@@ -14,11 +14,7 @@ from nd2_omezarr_converter.nd2_utils import (
 
 
 def test_nd2TileLoader(temp_dir):
-    path = (
-        temp_dir
-        / "ND_Acquisitions_nd2"
-        / "01_0c_0z.nd2"
-    )
+    path = temp_dir / "ND_Acquisitions_nd2" / "01_0c_0z.nd2"
     tile_loader = nd2TileLoader(path=str(path), p=0)
     # Check if the tile loader is initialized correctly
     assert tile_loader is not None
@@ -30,11 +26,7 @@ def test_nd2TileLoader(temp_dir):
     assert isinstance(data, np.ndarray)
     assert data.shape == (1, 1, 1, 512, 1024)
 
-    path = (
-        temp_dir
-        / "ND_Acquisitions_nd2"
-        / "05_2c_3z.nd2"
-    )
+    path = temp_dir / "ND_Acquisitions_nd2" / "05_2c_3z.nd2"
     tile_loader = nd2TileLoader(path=str(path), p=0)
     # Check if the tile loader is initialized correctly
     assert tile_loader is not None
@@ -46,11 +38,7 @@ def test_nd2TileLoader(temp_dir):
     assert isinstance(data, np.ndarray)
     assert data.shape == (1, 2, 3, 512, 1024)
 
-    path = (
-        temp_dir
-        / "ND_Acquisitions_nd2"
-        / "13_4t_XY2_2c_0z.nd2"
-    )
+    path = temp_dir / "ND_Acquisitions_nd2" / "13_4t_XY2_2c_0z.nd2"
     tile_loader = nd2TileLoader(path=str(path), p=0)
     # Check if the tile loader is initialized correctly
     assert tile_loader is not None
@@ -70,7 +58,7 @@ def test_build_tiles(temp_dir):
         / "20250506_124144_018"
         / "WellB02_ChannelSD DAPI- EM,SD GFP - EM_Seq0000.nd2"
     )
-    with nd2.ND2File(path) as nd2file:    
+    with nd2.ND2File(path) as nd2file:
         tiles = list(build_tiles(nd2file))
         assert len(tiles) == 6
         tile = tiles[0]

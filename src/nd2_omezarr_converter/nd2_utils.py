@@ -9,13 +9,13 @@ from typing import Any
 import nd2
 import numpy as np
 from fractal_converters_tools import (
+    OriginDict,
     PlatePathBuilder,
     Point,
     SimplePathBuilder,
     Tile,
     TiledImage,
     Vector,
-    OriginDict,
 )
 from ngio import PixelSize
 
@@ -99,7 +99,7 @@ def build_tiles(nd2file) -> Generator[Tile, Any, None]:
                 x=xy_coords[0],
                 y=xy_coords[1],
                 # z=pnt.stagePositionUm.z,
-                z=0,  # TODO: z != 0 needs to be fixed in fractal-converters-tools
+                z=0,  # all tiles in TiledImage must have the same z coordinate
                 c=0,
                 t=0,
             )
@@ -109,10 +109,7 @@ def build_tiles(nd2file) -> Generator[Tile, Any, None]:
             origin = OriginDict(
                 x_micrometer_original=xy_coords[0],
                 y_micrometer_original=xy_coords[1],
-                # z_micrometer_original=pnt.stagePositionUm.z,
-                # TODO: z != 0 needs to be fixed in fractal-converters-tools
-                z_micrometer_original=0,
-                t_original=0,
+                z_micrometer_original=pnt.stagePositionUm.z,
             )
             tile = Tile(
                 top_l=top_l,
@@ -129,7 +126,7 @@ def build_tiles(nd2file) -> Generator[Tile, Any, None]:
             x=pnt.stagePositionUm.x,
             y=pnt.stagePositionUm.y,
             # z=pnt.stagePositionUm.z,
-            z=0,  # TODO: z != 0 needs to be fixed in fractal-converters-tools
+            z=0,  # all tiles in TiledImage must have the same z coordinate
             c=0,
             t=0,
         )
