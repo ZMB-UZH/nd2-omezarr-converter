@@ -8,7 +8,8 @@ from typing import Any
 
 import nd2
 import numpy as np
-from fractal_converters_tools import (
+from ngio import PixelSize
+from ome_zarr_converters_tools import (
     OriginDict,
     PlatePathBuilder,
     Point,
@@ -17,7 +18,6 @@ from fractal_converters_tools import (
     TiledImage,
     Vector,
 )
-from ngio import PixelSize
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +97,7 @@ def build_tiles(nd2file) -> Generator[Tile, Any, None]:
             xy_coords = np.dot(transformMatrix, xy_coords)
             top_l = Point(
                 x=xy_coords[0],
-                y=xy_coords[1],
+                y=-xy_coords[1],
                 # z=pnt.stagePositionUm.z,
                 z=0,  # all tiles in TiledImage must have the same z coordinate
                 c=0,

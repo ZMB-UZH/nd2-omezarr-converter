@@ -8,7 +8,7 @@ from nd2_omezarr_converter.wrappers import (
 )
 
 
-def test_basic_worflow(temp_dir):
+def test_basic_workflow(temp_dir):
     # Test single file conversion
     path = temp_dir / "ND_Acquisitions_nd2" / "01_0c_0z.nd2"
     convert_nd2_to_omezarr(
