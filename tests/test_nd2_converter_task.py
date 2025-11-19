@@ -1,6 +1,8 @@
 from pathlib import Path
 
+import numpy.testing as npt
 import pytest
+from ngio import open_ome_zarr_container
 
 from nd2_omezarr_converter.wrappers import (
     Nd2InputModel,
@@ -8,7 +10,7 @@ from nd2_omezarr_converter.wrappers import (
 )
 
 
-def test_basic_worflow(temp_dir):
+def test_basic_workflow(temp_dir):
     # Test single file conversion
     path = temp_dir / "ND_Acquisitions_nd2" / "01_0c_0z.nd2"
     convert_nd2_to_omezarr(
@@ -30,7 +32,7 @@ def test_basic_worflow(temp_dir):
         acquisitions=[
             Nd2InputModel(path=str(path), plate_name="test_plate", acquisition_id=1)
         ],
-        tiling_mode="none",
+        # tiling_mode="none",
     )
     # TODO: Output can't be read by napari-ome-zarr because well shapes are not
     # consistent across wells. Check why.
@@ -50,3 +52,17 @@ def test_basic_worflow(temp_dir):
                 ),
             ],
         )
+
+
+def test_original_coordinates(temp_dir):
+    path = temp_dir / "ND_Acquisitions_nd2" / "09_XY2x3tiled_2c_0z.nd2"
+    convert_nd2_to_omezarr(
+        zarr_dir=temp_dir / "plate",
+        acquisitions=path,
+    )
+    zarr_url = temp_dir / "plate" / "09_XY2x3tiled_2c_0z.zarr"
+    ome_zarr_container = open_ome_zarr_container(zarr_url)
+    rois = ome_zarr_container.get_roi_table("FOV_ROI_table").rois()
+    npt.assert_allclose(rois[0].x_micrometer_original, -17788.549785)
+    npt.assert_allclose(rois[0].y_micrometer_original, 7291.308407)
+    npt.assert_allclose(rois[0].z_micrometer_original, 0.0)
