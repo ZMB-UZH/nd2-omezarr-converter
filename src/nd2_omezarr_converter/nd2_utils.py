@@ -154,6 +154,11 @@ def parse_well_info(fn):
         raise ValueError(f"Well info not found in filename {fn}")
 
 
+def color_to_hex(color) -> str:
+    """Convert nd2 Color object to 6-character hex string (e.g., '0000FF')."""
+    return f"{color.r:02X}{color.g:02X}{color.b:02X}"
+
+
 def build_tiled_image(
     nd2_path: str | Path,
     zarr_name: str,
@@ -166,10 +171,12 @@ def build_tiled_image(
     # load channel info
     channel_names = []
     channel_wavelengths = []
+    channel_colors = []
     for channel in nd2file.metadata.channels:
         channel_names.append(channel.channel.name)
         # take emission wavelength (excitation wavelength is not loaded correctly)
         channel_wavelengths.append(str(channel.channel.emissionLambdaNm))
+        channel_colors.append(color_to_hex(channel.channel.color))
 
     # Define path builder for relative ome-zarr path
     if plate:
@@ -197,6 +204,7 @@ def build_tiled_image(
         path_builder=_path_builder,
         channel_names=channel_names,
         wavelength_ids=channel_wavelengths,
+        channel_colors=channel_colors,
     )
     for tile in build_tiles(nd2file):
         tiled_image.add_tile(tile)
