@@ -66,3 +66,16 @@ def test_original_coordinates(temp_dir):
     npt.assert_allclose(rois[0].x_micrometer_original, -17788.549785)
     npt.assert_allclose(rois[0].y_micrometer_original, 7291.308407)
     npt.assert_allclose(rois[0].z_micrometer_original, 0.0)
+
+
+def test_original_colors(temp_dir):
+    path = temp_dir / "ND_Acquisitions_nd2" / "10_XY2x3tiled_2c_3z.nd2"
+    convert_nd2_to_omezarr(
+        zarr_dir=temp_dir / "plate",
+        acquisitions=path,
+    )
+    zarr_url = temp_dir / "plate" / "10_XY2x3tiled_2c_3z.zarr"
+    ome_zarr_container = open_ome_zarr_container(zarr_url)
+    channels_meta = ome_zarr_container.image_meta.channels_meta
+    assert channels_meta.channels[0].channel_visualisation.color == "0500FF"
+    assert channels_meta.channels[1].channel_visualisation.color == "03FF00"
